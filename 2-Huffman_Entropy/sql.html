@@ -1,0 +1,146 @@
+<html><head>
+    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+    <meta name="GENERATOR" content="Microsoft FrontPage Express 2.0">
+    <title>SQL - Tratando datas , strings e números</title>
+    </head>
+    
+    <body bgcolor="#00FFFF">
+    
+    <p><font color="#004080" size="3" face="Verdana"><strong>SQL -
+    Fazendo o tratamento de datas , valores numéricos e strings</strong></font><font color="#004080" size="2" face="Verdana"><strong>.</strong></font><font size="2" face="Verdana"><img src="cool.gif" width="15" height="15"></font></p>
+    
+    <p><font size="2" face="Verdana">Você já deve estar cansado de
+    saber quais as principais instruções SQL usadas para incluir ,
+    alterar e excluir código ; mas nunca é demais relembrar , não
+    é mesmo : <strong>INSERT INTO ... VALUES , UPDATE , DELETE FROM.</strong></font></p>
+    
+    <p><font size="2" face="Verdana">Não vou me ater a sintaxe dos
+    comandos mas gostaria de abordar um aspecto que as vezes pode
+    causar muitas dores de cabeça quando usamos estas instruções. </font></p>
+    
+    <p><font size="2" face="Verdana">Para incluir valores em um banco
+    de dados usamos a instrução INSERT INTO. Então , se quisermos
+    incluir valores numa tabela clientes que possua os seguintes
+    campos : <strong>Nome , Endereco , DataNascimento ,Desconto</strong></font></p>
+    
+    <p><font size="2" face="Verdana">Podemos usar a seguinte
+    instrução :</font></p>
+    
+    <p><font size="3" face="Verdana"><strong>INSERT INTO</strong> </font><font color="#0000FF" size="3" face="Verdana">clientes</font><font size="3" face="Verdana"> </font><font color="#408080" size="3" face="Verdana"><strong>(Nome , Endereco , DataNascimento,
+    Desconto)</strong></font><font color="#008000" size="3" face="Verdana"> </font><font size="3" face="Verdana"><br>
+    <strong>VALUES</strong> </font><font color="#FF8000" size="3" face="Verdana"><strong>('Carlos D'Silva','Rua Lins
+    10','10/31/1945',3,14)</strong></font></p>
+    
+    <p><font size="2" face="Verdana">Contudo , o comando utilizado
+    acima irá <strong>FALHAR</strong> ! Sabe porquê ? Vejamos :</font></p>
+    
+    <p><font color="#004080" size="3" face="Verdana"><strong>1-
+    Cuidado com strings com aspostrófo</strong></font></p>
+    
+    <p><font size="2" face="Verdana">Quando uma string for usada como
+    uma valor a ser tratado por uma instrução SQL e contiver um
+    apóstrofo pode ocorrer confusão com os apostrófes usados para
+    delimitar a string. Veja o exemplo:</font></p>
+    
+    <p><font color="#FF8000" size="3" face="Verdana"><strong>'Carlos
+    D'Silva'</strong></font></p>
+    
+    <p><font size="2" face="Verdana">Tudo se passa como se a string
+    terminasse no segundo apóstrofo : </font><font color="#FF8000" size="3" face="Verdana"><strong>'Carlos D'</strong></font></p>
+    
+    <p><font size="2" face="Verdana">A forma correta de usar o valor
+    acima seria assim : </font><font color="#FF8000" size="3" face="Verdana"><strong>'Carlos D''Silva'</strong></font></p>
+    
+    <p><font color="#000000" size="2" face="Verdana">Para resolver o
+    problema você deve fazer o seguinte: Toda vez que for construir
+    uma instrução SQL com valores strings você tem que ter certeza
+    de que cada apóstrofo seja substituído por dois apóstrofos.
+    Para realizar tal tarefa você pode usar o comando </font><font color="#0000FF" size="2" face="Verdana">REPLACE</font><font color="#000000" size="2" face="Verdana"> do VB6 :</font></p>
+    
+    <p><font color="#000000" size="4" face="Verdana">NovoValor =
+    Replace ( Valor , " ' " , " '' ")</font></p>
+    
+    <p><font color="#000000" size="3" face="Verdana">Obs</font><font color="#000000" size="4" face="Verdana">:</font><font size="2" face="Verdana">Se você não tem o vb6 pode usar a seguinte
+    função para obter o mesmo efeito:</font></p>
+    
+    <table border="0" bgcolor="#FFFFFF">
+        <tbody><tr>
+            <td><pre><strong>Public Function Replace(Valor As String, _
+    ProcuraPor As String, TrocaPor As String) As String</strong>
+    
+    Dim curposicao As Long
+    curposicao = 1
+    
+    Do
+      curposicao = InStr(curposicao, Valor, ProcuraPor)
+    
+      Valor = Left$(Valor, curposicao - 1) &amp; TrocaPor &amp; _
+      Right$(Valor, Len(Valor) - curposicao - Len(ProcuraPor) + 1)
+    
+    Loop Until InStr(Valor, ProcuraPor) &lt;&gt; 0
+    
+    Replace = Valor
+    
+    <strong>End Function</strong></pre>
+            </td>
+        </tr>
+    </tbody></table>
+    
+    <p><font color="#004080" size="3" face="Verdana"><strong>2-
+    Cuidado com ponto decimal</strong></font></p>
+    
+    <p><font color="#000000" size="2" face="Verdana">Uma vírgula na
+    lista VALUES é usada para separar os valores . O símbolo
+    decimal padrão é o ponto (.) . Então se você fornecer um
+    valor com uma vírgula a instrução vai falhar pois é como se
+    você estivesse informando dois valores.</font></p>
+    
+    <p><font color="#000000" size="2" face="Verdana">A forma correta
+    para : </font><font color="#FF8000" size="4" face="Verdana">3,14</font><font color="#000000" size="4" face="Verdana"> é </font><font color="#FF8000" size="4" face="Verdana">3.14</font></p>
+    
+    <p><font color="#000000" size="2" face="Verdana">Para evitar o
+    problema ( principalmente quando as configurações regionais
+    usarem vírgulas como decimais ) você precisa substituir a
+    vírgula pelo ponto: Você pode usar também a função </font><font color="#0000FF" size="2" face="Verdana">REPLACE </font><font color="#000000" size="2" face="Verdana">do vb6:</font></p>
+    
+    <p><font color="#000000" size="4" face="Verdana">NovoValor =
+    Replace ( Valor , "," , "." )</font></p>
+    
+    <p><font color="#000000" size="2" face="Verdana"><strong>Obs</strong>:
+    Para quem não tem o VB6 pode usar a seguinte função: A chamada
+    é feita assim - <strong>Converte(3,14)</strong></font></p>
+    
+    <table border="0" bgcolor="#FFFFFF">
+        <tbody><tr>
+            <td><pre>Function converte(Valor As Double)
+    Dim NovoValor As String
+    NovoValor = Format(Valor)</pre>
+            <pre>If InStr(NovoValor, ",") &lt;&gt; 0 Then
+      Mid(NovoValor, InStr(NovoValor, ","), 1) = "."
+      converte = NovoValor
+    End If</pre>
+            <pre>End Function</pre>
+            </td>
+        </tr>
+    </tbody></table>
+    
+    <p><font color="#004080" size="3" face="Verdana"><strong>3-
+    Cuidados com datas</strong></font></p>
+    
+    <p><font color="#000000" size="2" face="Verdana">As datas podem
+    ser usadas de diversas formas , dependendo do Banco de dados
+    usado , Assim temos :</font></p>
+    
+    <p><font color="#000000" size="2" face="Verdana">- </font><font color="#0000FF" size="2" face="Verdana"><strong>Access</strong> </font><font color="#000000" size="2" face="Verdana">- Podemos usar as datas
+    delimitidas pela cerquilha ( # ) - Ex: </font><font color="#000000" size="3" face="Verdana">#01/06/90#</font></p>
+    
+    <p><font color="#000000" size="2" face="Verdana">- </font><font color="#0000FF" size="2" face="Verdana"><strong>SQL Server</strong></font><font color="#000000" size="2" face="Verdana"> - Podemos inserir datas
+    usando uma expressão de data válida em uma string. Ex: </font><font color="#000000" size="3" face="Verdana">'01/06/90'</font></p>
+    
+    <p><font size="2" face="Verdana"><strong>Obs</strong>:<u> No
+    formato americano o mês vem antes do dia : mm/dd/yyyy</u></font></p>
+    
+    <p><font size="2" face="Verdana">Até a próxima... <img src="2.gif" width="15" height="15"></font></p>
+    
+    
+    </body></html>
